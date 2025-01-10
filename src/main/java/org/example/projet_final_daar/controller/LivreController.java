@@ -1,10 +1,10 @@
 package org.example.projet_final_daar.controller;
 
-import org.example.projet_final_daar.model.Book;
 import org.example.projet_final_daar.model.Livre;
-import org.example.projet_final_daar.service.BookService;
+import org.example.projet_final_daar.service.KPMWithCarryOverService;
 import org.example.projet_final_daar.service.LivreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +16,9 @@ public class LivreController {
     @Autowired
     private LivreService livreService;
 
+    @Autowired
+    private KPMWithCarryOverService kpmWithCarryOverService;
+
 
     @GetMapping
     public List<Livre> getAllBooks() {
@@ -23,9 +26,29 @@ public class LivreController {
     }
 
     @GetMapping("/{id}")
-    public Livre getBookById(@PathVariable int id) {
-        return livreService.getBookById(id);
+    public ResponseEntity<Livre>  getBookById(@RequestParam(required = false) Integer id) {
+        Livre livre =  livreService.getBookById(id);
+        if (livre != null) {
+            return ResponseEntity.ok(livre);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
+
+    @GetMapping("/search/{motif}")
+    public List<Livre>  getBookByMotif(@RequestParam String motif) {
+        return  kpmWithCarryOverService.searchMotifInAllURLKMP(motif);
+    }
+
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Livre> getBookById(@PathVariable int id) {
+//        Livre livre = livreService.getBookById(id);
+//        if (livre != null) {
+//            return ResponseEntity.ok(livre);
+//        } else {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
 
     @PostMapping("/charge")

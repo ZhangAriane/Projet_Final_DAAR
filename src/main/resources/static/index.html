@@ -12,5 +12,17 @@
     <button type="submit">Afficher tous les livres</button>
 </form>
 
+<form action="/livres/{id}" method="GET">
+    <label for="id">Rechercher un livre par ID :</label>
+    <input type="number" id="id" name="id" placeholder="Entrez l'ID du livre" required>
+    <button type="submit">Rechercher</button>
+</form>
+
+<form action="/livres/search/{motif}" method="GET">
+    <label for="motif">Rechercher un livre par motif :</label>
+    <input type="text" id="motif" name="motif" placeholder="Entrez un motif " required>
+    <button type="submit">Rechercher</button>
+</form>
+
 </body>
 </html>
