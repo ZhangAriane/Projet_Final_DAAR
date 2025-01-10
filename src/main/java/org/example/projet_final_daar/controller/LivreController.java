@@ -1,6 +1,7 @@
 package org.example.projet_final_daar.controller;
 
 import org.example.projet_final_daar.model.Livre;
+import org.example.projet_final_daar.service.AutomatonService;
 import org.example.projet_final_daar.service.KPMWithCarryOverService;
 import org.example.projet_final_daar.service.LivreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ public class LivreController {
 
     @Autowired
     private KPMWithCarryOverService kpmWithCarryOverService;
+
+    @Autowired
+    private AutomatonService automatonService;
 
 
     @GetMapping
@@ -40,15 +44,10 @@ public class LivreController {
         return  kpmWithCarryOverService.searchMotifInAllURLKMP(motif);
     }
 
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Livre> getBookById(@PathVariable int id) {
-//        Livre livre = livreService.getBookById(id);
-//        if (livre != null) {
-//            return ResponseEntity.ok(livre);
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
+    @GetMapping("/advancedSearch/{regEx}")
+    public List<Livre>  getBookByRegEx(@RequestParam String regEx) {
+        return  automatonService.searchMotifInAllURLKMP(regEx);
+    }
 
 
     @PostMapping("/charge")

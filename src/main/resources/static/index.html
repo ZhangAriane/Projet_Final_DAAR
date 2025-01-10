@@ -24,5 +24,11 @@
     <button type="submit">Rechercher</button>
 </form>
 
+<form action="/livres/advancedSearch/{regEx}" method="GET">
+    <label for="regEx">Rechercher un livre par une expression régulière :</label>
+    <input type="text" id="regEx" name="regEx" placeholder="Entrez une expression régulière " required>
+    <button type="submit">Rechercher</button>
+</form>
+
 </body>
 </html>
