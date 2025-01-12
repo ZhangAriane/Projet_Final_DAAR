@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.hc.client5.http.fluent.Request;
 import org.apache.hc.core5.util.Timeout;
-import org.example.projet_final_daar.model.Book;
 import org.example.projet_final_daar.model.Livre;
 import org.springframework.stereotype.Service;
 
