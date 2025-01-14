@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/livres")
+@RequestMapping("/api")
 public class LivreController {
 
     @Autowired
@@ -23,15 +23,19 @@ public class LivreController {
     @Autowired
     private AutomatonService automatonService;
 
+    @GetMapping("/hello")
+    public String helloWorld() {
+        return "HelloWorld!";
+    }
 
-    @GetMapping
+    @GetMapping("/livres")
     public List<Livre> getAllBooks() {
         return livreService.getAllBooks();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Livre>  getBookById(@RequestParam(required = false) Integer id) {
-        Livre livre =  livreService.getBookById(id);
+    @GetMapping("/livres/{id}")
+    public ResponseEntity<Livre> getBookById(@PathVariable Integer id) {
+        Livre livre = livreService.getBookById(id);
         if (livre != null) {
             return ResponseEntity.ok(livre);
         } else {
@@ -39,18 +43,20 @@ public class LivreController {
         }
     }
 
-    @GetMapping("/search/{motif}")
-    public List<Livre>  getBookByMotif(@RequestParam String motif) {
-        return  kpmWithCarryOverService.searchMotifInAllURLKMP(motif);
+
+    @GetMapping("/livres/search/{motif}")
+    public List<Livre> getBookByMotif(@PathVariable String motif) {
+        return kpmWithCarryOverService.searchMotifInAllURLKMP(motif);
     }
 
-    @GetMapping("/advancedSearch/{regEx}")
-    public List<Livre>  getBookByRegEx(@RequestParam String regEx) {
+
+    @GetMapping("/livres/advancedSearch/{regEx}")
+    public List<Livre>  getBookByRegEx(@PathVariable String regEx) {
         return  automatonService.searchMotifInAllURLKMP(regEx);
     }
 
 
-    @PostMapping("/charge")
+    @PostMapping("/livres/charge")
     public void chargeBook(){
         for(int i=1; i<10000;i++) {
             livreService.fetchBooks(i);

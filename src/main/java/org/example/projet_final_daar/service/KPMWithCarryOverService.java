@@ -21,7 +21,7 @@ public class KPMWithCarryOverService {
      * @param motif motif à chercher dans le fichier
      * @param urlTxt l'url du fichier texte
      */
-    private  Boolean searchMotifInURLKMP(String motif, String urlTxt) {
+    private static Boolean searchMotifInURLKMP(String motif, String urlTxt) {
         try (BufferedReader lecteur = new BufferedReader(new InputStreamReader(new URL(urlTxt).openStream()))) {
             String ligne;
 
@@ -75,5 +75,13 @@ public class KPMWithCarryOverService {
         }
         return res;
     }
-    
+
+
+    public static void main(String[] args) {
+
+
+        //cherche "Sargon" dans le livre 56667-0 avec KMP
+        System.out.println(KPMWithCarryOverService.searchMotifInURLKMP("Sargon","https://www.gutenberg.org/files/2069/2069-0.txt"));
+
+    }
 }

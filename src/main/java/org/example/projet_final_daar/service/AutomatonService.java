@@ -25,7 +25,7 @@ public class AutomatonService {
      * @param tree arbre d'expression regulière
      * @param urlTxt l'URL du fichier texte
      */
-    private Boolean searchRegExpInFileAutomaton(String tree, String urlTxt) throws Exception {
+    private static Boolean searchRegExpInFileAutomaton(String tree, String urlTxt) throws Exception {
         RegExTree treeRegEx = RegEx.parse(tree);
 
         try (BufferedReader lecteur = new BufferedReader(new InputStreamReader(new URL(urlTxt).openStream()))) {
@@ -83,7 +83,15 @@ public class AutomatonService {
         }
         return res;
     }
-    
+
+
+    public static void main(String[] args) throws Exception {
+
+
+        //cherche "Sargon" dans le livre 56667-0 avec KMP
+        System.out.println(AutomatonService.searchRegExpInFileAutomaton("Sargon","https://www.gutenberg.org/files/2069/2069-0.txt"));
+
+    }
 
 }
 
