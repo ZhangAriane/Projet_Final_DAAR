@@ -39,7 +39,7 @@ export default {
         type="text"
         v-model="searchQuery"
         class="search-input"
-        placeholder="Recherchez avec un motif"
+        placeholder="Recherchez avec une expression régulière "
     />
     <button class="search-button" @click="onSearch">
       🔍
