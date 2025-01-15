@@ -52,7 +52,7 @@ public class LivreController {
 
     @GetMapping("/livres/advancedSearch/{regEx}")
     public List<Livre>  getBookByRegEx(@PathVariable String regEx) {
-        return  automatonService.searchMotifInAllURLKMP(regEx);
+        return  automatonService.searchMotifInAllURLAutomaton(regEx);
     }
 
 
