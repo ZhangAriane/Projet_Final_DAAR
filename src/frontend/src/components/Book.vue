@@ -1,3 +1,11 @@
+<template>
+  <div class="book" @click="openTxt">
+    <img :src="image" alt="Image du livre" class="book-image"/>
+    <h4 class="book-title">{{ name }}</h4>
+    <p class="book-authors">{{ authors }}</p>
+  </div>
+</template>
+
 <script>
 export default {
   name: "Book",
@@ -27,13 +35,6 @@ export default {
 };
 </script>
 
-<template>
-  <div class="book" @click="openTxt">
-    <img :src="image" alt="Image du livre" class="book-image"/>
-    <h4 class="book-title">{{ name }}</h4>
-    <p class="book-authors">{{ authors }}</p>
-  </div>
-</template>
 
 <style scoped>
 .book {

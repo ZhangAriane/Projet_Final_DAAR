@@ -1,3 +1,22 @@
+<template>
+  <div class="search-bar">
+    <input
+        type="text"
+        v-model="searchQuery"
+        class="search-input"
+        placeholder="Recherchez avec une expression régulière "
+        @keyup.enter="onSearch"
+    />
+    <button class="search-button" @click="onSearch">
+      🔍
+    </button>
+
+    <div v-if="searching" class="searching-message">Recherche en cours...</div>
+  </div>
+</template>
+
+
+
 <script>
 import axios from "axios";
 
@@ -33,23 +52,6 @@ export default {
 };
 </script>
 
-<template>
-  <div class="search-bar">
-    <input
-        type="text"
-        v-model="searchQuery"
-        class="search-input"
-        placeholder="Recherchez avec une expression régulière "
-    />
-    <button class="search-button" @click="onSearch">
-      🔍
-    </button>
-
-    <div v-if="searching" class="searching-message">Recherche en cours...</div>
-  </div>
-</template>
-
-
 <style scoped>
 .search-bar {
   display: flex;
@@ -78,7 +80,6 @@ export default {
 .search-input::placeholder {
   color: #aaa;
 }
-
 
 
 .search-button {

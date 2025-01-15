@@ -16,13 +16,13 @@ import Book from "@/components/Book.vue";
 
 export default {
   name: "ListBook",
-  components: { Book },
+  components: {Book},
   props: {
     books: {
       type: Array,
       required: true,
-    },
-  },
+    }
+  }
 };
 </script>
 

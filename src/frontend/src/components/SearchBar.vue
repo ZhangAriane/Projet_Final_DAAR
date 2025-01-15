@@ -1,3 +1,20 @@
+<template>
+  <div class="search-bar">
+    <input
+        type="text"
+        v-model="searchQuery"
+        class="search-input"
+        placeholder="Recherchez avec un motif"
+        @keyup.enter="onSearch"
+    />
+    <button class="search-button" @click="onSearch">
+      🔍
+    </button>
+
+    <div v-if="searching" class="searching-message">Recherche en cours...</div>
+  </div>
+</template>
+
 <script>
 import axios from "axios";
 
@@ -33,22 +50,6 @@ export default {
 };
 </script>
 
-<template>
-  <div class="search-bar">
-    <input
-        type="text"
-        v-model="searchQuery"
-        class="search-input"
-        placeholder="Recherchez avec un motif"
-    />
-    <button class="search-button" @click="onSearch">
-      🔍
-    </button>
-
-    <div v-if="searching" class="searching-message">Recherche en cours...</div>
-  </div>
-</template>
-
 
 <style scoped>
 .search-bar {
@@ -78,7 +79,6 @@ export default {
 .search-input::placeholder {
   color: #aaa;
 }
-
 
 
 .search-button {

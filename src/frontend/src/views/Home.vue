@@ -1,9 +1,12 @@
 <template>
   <div>
-    <h1 class="title">Bienvenue dans la Bibliothèque</h1>
+    <h1 class="title">{{ title }}</h1>
     <div class="bar-container">
       <SearchBar @search-results="handleSearchResults"/>
       <SearchAdvancedBar @search-advanced-results="handleSearchAdvancedResults"/>
+    </div>
+    <div v-if="isVisible" class="result-count">
+      Nombre de résultats : <span class="number">{{ number }}</span>
     </div>
     <ListBook :books="books"/>
   </div>
@@ -20,27 +23,35 @@ export default {
   data() {
     return {
       books: [], // Liste des livres
+      title: '',
+      number: 0,
+      isVisible: false
     };
   },
   methods: {
     handleSearchResults(results) {
-      // Redirige vers la page des résultats de recherche avec les données
-      this.$router.push({name: "Search", query: {results: JSON.stringify(results)}});
+      this.title = "Résultats de Recherche";
+      this.books = results;
+      this.number = this.books.length;
+      this.isVisible = true;
     },
     handleSearchAdvancedResults(results) {
-      // Redirige vers la page des résultats de recherche avec les données
-      this.$router.push({name: "SearchAdvanced", query: {results: JSON.stringify(results)}});
+      this.title = "Résultats de Recherche avancée";
+      this.books = results;
+      this.number = this.books.length;
+      this.isVisible = true;
     }
   },
   async created() {
     // Récupère la liste des livres au chargement
     try {
+      this.title = "Bienvenue dans la Bibliothèque";
       const response = await fetch("/api/livres");
       this.books = await response.json();
     } catch (error) {
       console.error("Erreur lors du chargement des livres :", error);
     }
-  },
+  }
 };
 </script>
 
@@ -56,7 +67,7 @@ export default {
 .title {
   font-size: 3rem;
   font-weight: bold;
-  text-align: left;
+  text-align: center;
   color: #fff;
   background: linear-gradient(90deg, #36b138, #9765cd 70%);
   -webkit-background-clip: text;
@@ -66,5 +77,24 @@ export default {
   padding: 10px;
   border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.result-count {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  background: #f9f9f9;
+  border: 2px solid #36b138;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin: 20px auto;
+  text-align: center;
+  width: 50%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.number {
+  color: #36b138;
+  font-size: 1.5rem;
 }
 </style>
