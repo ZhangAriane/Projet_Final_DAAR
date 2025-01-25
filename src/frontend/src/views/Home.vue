@@ -2,9 +2,19 @@
   <div>
     <h1 class="title">{{ title }}</h1>
     <div class="bar-container">
-      <SearchBar @search-results="handleSearchResults"/>
-      <SearchAdvancedBar @search-advanced-results="handleSearchAdvancedResults"/>
+      <SearchBar
+          :use-closeness-centrality="useClosenessCentrality"
+          @search-results="handleSearchResults"
+      />
+      <SearchAdvancedBar
+          :use-closeness-centrality="useClosenessCentrality"
+          @search-advanced-results="handleSearchAdvancedResults"/>
     </div>
+    <!-- Ajout de la case à cocher dans le parent -->
+    <label>
+      <input type="checkbox" v-model="useClosenessCentrality" />
+      Trier par centralité de proximité
+    </label>
     <div v-if="isVisible" class="result-count">
       Nombre de résultats : <span class="number">{{ number }}</span>
     </div>
@@ -25,7 +35,8 @@ export default {
       books: [], // Liste des livres
       title: '',
       number: 0,
-      isVisible: false
+      isVisible: false,
+      useClosenessCentrality: false // État de la checkbox
     };
   },
   methods: {

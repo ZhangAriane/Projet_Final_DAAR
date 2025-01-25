@@ -1,7 +1,9 @@
 package org.example.projet_final_daar.controller;
 
 import org.example.projet_final_daar.model.Livre;
+import org.example.projet_final_daar.model.closenessCentrality.ClosenessCentrality;
 import org.example.projet_final_daar.service.AutomatonService;
+import org.example.projet_final_daar.service.ClosenessCentralityService;
 import org.example.projet_final_daar.service.KPMWithCarryOverService;
 import org.example.projet_final_daar.service.LivreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class LivreController {
 
     @Autowired
     private AutomatonService automatonService;
+
+    @Autowired
+    private ClosenessCentralityService closenessCentralityService;
 
     @GetMapping("/hello")
     public String helloWorld() {
@@ -46,13 +51,24 @@ public class LivreController {
 
     @GetMapping("/livres/search/{motif}")
     public List<Livre> getBookByMotif(@PathVariable String motif) {
-        return kpmWithCarryOverService.searchMotifInAllURLKMP(motif);
+        return kpmWithCarryOverService.searchMotifInAllURLKMPSortByOcurrences(motif);
     }
 
 
     @GetMapping("/livres/advancedSearch/{regEx}")
     public List<Livre>  getBookByRegEx(@PathVariable String regEx) {
-        return  automatonService.searchMotifInAllURLAutomaton(regEx);
+        return  automatonService.searchMotifInAllURLAutomatonSortByOcurrences(regEx);
+    }
+
+    @GetMapping("/livres/searchSortByClosenessCentrality/{motif}")
+    public List<Livre> getBookByMotifAndSortByClosenessCentrality(@PathVariable String motif) throws Exception {
+        return closenessCentralityService.sortByClosenessCentralityService(kpmWithCarryOverService.searchMotifInAllURLKMP(motif));
+    }
+
+
+    @GetMapping("/livres/advancedSearchSortByClosenessCentrality/{regEx}")
+    public List<Livre>  getBookByRegExAndSortByClosenessCentrality(@PathVariable String regEx) throws Exception {
+        return  closenessCentralityService.sortByClosenessCentralityService(automatonService.searchMotifInAllURLAutomaton(regEx));
     }
 
 

@@ -1,5 +1,7 @@
 package org.example.projet_final_daar.service;
 
+import com.fasterxml.jackson.core.exc.StreamReadException;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.example.projet_final_daar.model.KPM.KMPWithCarryOver;
@@ -16,7 +18,8 @@ public class KPMWithCarryOverService {
     /**
      * Cherche un motif dans un fichier avec la méthode KMP
      * Retourne true si le motif existe dans le fichier
-     * @param motif motif à chercher dans le fichier
+     *
+     * @param motif  motif à chercher dans le fichier
      * @param urlTxt l'url du fichier texte
      */
     private static int searchMotifInURLKMP(String motif, String urlTxt) {
@@ -51,6 +54,7 @@ public class KPMWithCarryOverService {
 
         return res;
     }
+
     private HashMap<Integer, List<Livre>> preSearchMotifInAllURLKMP(String motif) {
         HashMap<Integer, List<Livre>> res = new HashMap<>();
         try {
@@ -59,10 +63,10 @@ public class KPMWithCarryOverService {
             File file = new File(jsonFilePath);
             if (file.exists()) {
                 // Lire les livres depuis le fichier JSON
-                List<Livre> livres =  new ArrayList<>(Arrays.asList(objectMapper.readValue(file, Livre[].class)));
+                List<Livre> livres = new ArrayList<>(Arrays.asList(objectMapper.readValue(file, Livre[].class)));
 
-                for(Livre livre : livres) {
-                    int n = searchMotifInURLKMP(motif,livre.getTxt());
+                for (Livre livre : livres) {
+                    int n = searchMotifInURLKMP(motif, livre.getTxt());
                     if (n > 0) {
                         if (!res.containsKey(n)) {
                             ArrayList<Livre> temp = new ArrayList<>();
@@ -94,15 +98,40 @@ public class KPMWithCarryOverService {
         return res;
     }
 
-    public  List<Livre> searchMotifInAllURLKMP(String motif) {
+    public List<Livre> searchMotifInAllURLKMPSortByOcurrences(String motif) {
         return sortByNumberOccurences(preSearchMotifInAllURLKMP(motif));
     }
 
 
+    public List<Livre> searchMotifInAllURLKMP(String motif)   {
+        List<Livre> res = new ArrayList<>();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+            String jsonFilePath = "src/main/java/org/example/projet_final_daar/data/books.json";
+            File file = new File(jsonFilePath);
+            if (file.exists()) {
+                // Lire les livres depuis le fichier JSON
+                List<Livre> livres = new ArrayList<>(Arrays.asList(objectMapper.readValue(file, Livre[].class)));
+
+                for (Livre livre : livres) {
+                    int n = searchMotifInURLKMP(motif, livre.getTxt());
+                    if (n > 0) {
+
+                        res.add(livre);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
     public static void main(String[] args) {
 
         //cherche "Sargon" dans le livre 56667-0 avec KMP
-        System.out.println(KPMWithCarryOverService.searchMotifInURLKMP("Sargon","https://www.gutenberg.org/files/2069/2069-0.txt"));
+        System.out.println(KPMWithCarryOverService.searchMotifInURLKMP("Sargon", "https://www.gutenberg.org/files/2069/2069-0.txt"));
 
     }
 }

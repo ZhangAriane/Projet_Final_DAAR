@@ -20,6 +20,12 @@ import axios from "axios";
 
 export default {
   name: "SearchBar",
+  props: {
+    // Prop pour recevoir l'état de la checkbox du parent
+    useClosenessCentrality: {
+      type: Boolean
+    }
+  },
   data() {
     return {
       searchQuery: "", // Contient le texte saisi par l'utilisateur
@@ -36,7 +42,13 @@ export default {
       this.searching = true; // Active l'indicateur de recherche
 
       try {
-        const response = await axios.get(`/api/livres/search/${encodeURIComponent(this.searchQuery)}`);
+        // Sélection de l'URL en fonction de la prop useClosenessCentrality
+        const apiUrl = this.useClosenessCentrality
+            ? `/api/livres/searchSortByClosenessCentrality/${encodeURIComponent(this.searchQuery)}`
+            : `/api/livres/search/${encodeURIComponent(this.searchQuery)}`;
+        // console.log(apiUrl);
+        // Appel de l'API
+        const response = await axios.get(apiUrl);
         console.log("Résultats de recherche :", response.data);
         this.$emit("search-results", response.data); // Émet les résultats au composant parent
       } catch (error) {

@@ -108,8 +108,36 @@ public class AutomatonService {
     }
 
 
-    public List<Livre> searchMotifInAllURLAutomaton(String motif) {
+    public List<Livre> searchMotifInAllURLAutomatonSortByOcurrences(String motif) {
         return sortByNumberOccurences(preSearchMotifInAllURLAutomaton(motif));
+    }
+
+    public List<Livre> searchMotifInAllURLAutomaton(String motif)  {
+        List<Livre> res = new ArrayList<>();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+            String jsonFilePath = "src/main/java/org/example/projet_final_daar/data/books.json";
+            File file = new File(jsonFilePath);
+            if (file.exists()) {
+                // Lire les livres depuis le fichier JSON
+                List<Livre> livres = new ArrayList<>(Arrays.asList(objectMapper.readValue(file, Livre[].class)));
+
+                for (Livre livre : livres) {
+                    int n = searchRegExpInFileAutomaton(motif, livre.getTxt());
+                    if (n > 0) {
+                        res.add(livre);
+                    }
+
+
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return res;
     }
 
 
