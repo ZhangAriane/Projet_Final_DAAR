@@ -1,14 +1,23 @@
 package org.example.projet_final_daar.service;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.example.projet_final_daar.model.Livre;
+import org.example.projet_final_daar.model.closenessCentrality.JaccardGraph;
 import org.springframework.stereotype.Service;
+
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
-import static org.example.projet_final_daar.model.closenessCentrality.ClosenessCentrality.calculateClosenessCentrality2;
+import static org.example.projet_final_daar.model.closenessCentrality.ClosenessCentrality.calculateClosenessCentrality;
+import static org.example.projet_final_daar.model.closenessCentrality.Jaccard.buildJaccardGraph;
+import static org.example.projet_final_daar.model.closenessCentrality.JaccardGraph.loadGraphFromDirectory;
 
 @Service
 public class ClosenessCentralityService {
@@ -22,29 +31,26 @@ public class ClosenessCentralityService {
      * @throws Exception En cas d'erreur lors de la connexion ou de la lecture.
      */
     private List<String> extractWordsFromUrl(String urlString) throws Exception {
-        // Liste pour stocker les mots extraits
-        List<String> words = new ArrayList<>();
-
-        // Connexion à l'URL et lecture du contenu ligne par ligne
-        URL url = new URL(urlString);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
-
-        String line;
-        while ((line = reader.readLine()) != null) {
-            // Divise chaque ligne en mots en utilisant une regex pour séparer les mots
-            String[] tokens = line.split("\\W+");
-
-            // Ajoute les mots qui respectent la condition de longueur (> 4)
-            for (String word : tokens) {
-                if (word.length() >= 4) {
-                    words.add(word);
+        try {
+            List<String> words = new ArrayList<>();
+            URL url = new URL(urlString);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] tokens = line.split("\\W+");
+                for (String word : tokens) {
+                    if (word.length() >= 4) {
+                        words.add(word);
+                    }
                 }
             }
+            reader.close();
+            return words;
+        } catch (IOException e) {
+            throw new IOException("Erreur lors de la lecture de l'URL : " + urlString, e);
         }
-
-        reader.close();
-        return words; // Retourne la liste des mots
     }
+
 
     /**
      * Extrait les mots d'une liste de livres.
@@ -55,13 +61,18 @@ public class ClosenessCentralityService {
      * @throws Exception En cas d'erreur lors de la lecture des URLs des livres.
      */
     private Map<String, List<String>> extractWordsFromBooks(List<Livre> livres) throws Exception {
-        Map<String, List<String>> res = new HashMap<>();
-        for (Livre livre : livres) {
-            // Extrait les mots depuis l'URL de chaque livre et les associe à son titre
-            res.put(Integer.toString(livre.getId()), extractWordsFromUrl(livre.getTxt()));
-        }
-        return res;
+        return livres.parallelStream().collect(Collectors.toMap(
+                livre -> Integer.toString(livre.getId()),
+                livre -> {
+                    try {
+                        return extractWordsFromUrl(livre.getTxt());
+                    } catch (Exception e) {
+                        throw new RuntimeException("Erreur lors de l'extraction des mots pour le livre : " + livre.getId(), e);
+                    }
+                }
+        ));
     }
+
 
     /**
      * Calcule la centralité de proximité pour chaque livre, puis classe les livres par leur centralité.
@@ -75,12 +86,13 @@ public class ClosenessCentralityService {
     private HashMap<Double, List<Livre>> preClosenessCentrality(List<Livre> livres) throws Exception {
         HashMap<Double, List<Livre>> res = new HashMap<>();
 
-        // Extrait les mots de chaque livre
-        Map<String, List<String>> extractWordsFromBooks = extractWordsFromBooks(livres);
+
+        // Lire le graph depuis les fichiers txt
+        JaccardGraph graph = loadGraphFromDirectory("src/main/java/org/example/projet_final_daar/data/graph", livres);
 
         for (Livre livre : livres) {
             // Calcule la centralité de proximité pour le livre actuel
-            double n = calculateClosenessCentrality2(extractWordsFromBooks, livres.size(), Integer.toString(livre.getId()));
+            double n = calculateClosenessCentrality(graph, livres.size(), Integer.toString(livre.getId()));
             if (n > 0) { // Si le score de centralité est positif
                 if (!res.containsKey(n)) {
                     ArrayList<Livre> temp = new ArrayList<>();
@@ -91,6 +103,7 @@ public class ClosenessCentralityService {
                 }
             }
         }
+
         return res; // Retourne la HashMap des centralités
     }
 
@@ -125,4 +138,32 @@ public class ClosenessCentralityService {
         return sortByClosenessCentrality(preClosenessCentrality(livres));
     }
 
+
+    /*********************************************************************************************/
+    /*       Méthode pour calculer et sauvegarder le graph de Jaccard de la bibliothèque         */
+
+    /*********************************************************************************************/
+
+    public void buildGraph() throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+        String jsonFilePath = "src/main/java/org/example/projet_final_daar/data/books.json";
+        File file = new File(jsonFilePath);
+        if (file.exists()) {
+            // Lire les livres depuis le fichier JSON
+            List<Livre> livres = new ArrayList<>(Arrays.asList(objectMapper.readValue(file, Livre[].class)));
+
+            // Extrait les mots de chaque livre
+            Map<String, List<String>> extractWordsFromBooks = extractWordsFromBooks(livres);
+
+            JaccardGraph graph = new JaccardGraph();
+            for (Livre livre : livres) {
+                buildJaccardGraph(graph, extractWordsFromBooks, Integer.toString(livre.getId()));
+                extractWordsFromBooks.remove(Integer.toString(livre.getId()));
+                System.out.println("Graph Created : " + livre.getId());
+            }
+            graph.saveGraphToTxt("src/main/java/org/example/projet_final_daar/data/graph",10000 );
+        }
+
+        System.out.println("Graph Created");
+    }
 }

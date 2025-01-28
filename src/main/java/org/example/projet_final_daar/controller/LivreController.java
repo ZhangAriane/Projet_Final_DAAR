@@ -78,4 +78,9 @@ public class LivreController {
             livreService.fetchBooks(i);
         }
     }
+
+    @PostMapping("/livres/chargeGraph")
+    public void chargeGraph() throws Exception {
+        closenessCentralityService.buildGraph();
+    }
 }

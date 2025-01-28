@@ -39,15 +39,16 @@ public class Jaccard {
     }
 
     /**
-     * Construit un graphe de similarité entre un document donné et les autres documents,
+     * Construit et extent un graphe de similarité entre un document donné et les autres documents,
      * basé sur la distance de Jaccard.
      *
+     * @param graph graph à étendre
      * @param documents Une map associant le nom des fichiers à leurs listes de mots.
      * @param doc       Le document cible à comparer avec les autres.
      * @return Un objet JaccardGraph représentant les connexions entre le document cible et les autres.
      */
-    public static JaccardGraph buildJaccardGraph(Map<String, List<String>> documents, String doc) {
-        JaccardGraph graph = new JaccardGraph();
+    public static JaccardGraph buildJaccardGraph(JaccardGraph graph, Map<String, List<String>> documents, String doc) {
+
         List<String> fileNames = new ArrayList<>(documents.keySet());
 
         for (String fileName : fileNames) {
@@ -77,10 +78,12 @@ public class Jaccard {
         documents.put("doc2", doc2);
         documents.put("doc3", doc3);
 
+
         // Construit le graphe de similarité entre les documents.
-        JaccardGraph graph = buildJaccardGraph(documents, "doc1");
+        JaccardGraph graph = new JaccardGraph();
+        JaccardGraph result = buildJaccardGraph(graph,documents, "doc1");
 
         // Affiche le graphe.
-        graph.printGraph();
+        result.printGraph();
     }
 }

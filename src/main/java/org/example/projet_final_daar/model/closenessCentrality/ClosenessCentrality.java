@@ -35,8 +35,9 @@ public class ClosenessCentrality {
      * @return La centralité de proximité du nœud cible.
      */
     public static Double calculateClosenessCentrality2(Map<String, List<String>> documents, int n, String doc) {
-        JaccardGraph graph = buildJaccardGraph(documents, doc);
-        return calculateClosenessCentrality(graph, n, doc);
+        JaccardGraph graph = new JaccardGraph();
+        JaccardGraph result = buildJaccardGraph(graph,documents, doc);
+        return calculateClosenessCentrality(result, n, doc);
     }
 
     public static void main(String[] args) {
